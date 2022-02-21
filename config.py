@@ -1,0 +1,2 @@
+
+PRINT_EACH_TEST = False
