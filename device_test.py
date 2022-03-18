@@ -1,10 +1,70 @@
 #name=API Unit Tests
 
-def OnInit():
-    pass
+def OnInit(self) -> None:
+    ...
 
-def OnIdle():
-    pass
+def OnMidiIn(self, event) -> None:
+    ...
 
-def OnMidiIn(event):
-    pass
+def OnMidiMsg(self, event) -> None:
+    ...
+
+def OnSysEx(self, event) -> None:
+    ...
+
+def OnNoteOn(self, event) -> None:
+    ...
+
+def OnNoteOff(self, event) -> None:
+    ...
+
+def OnControlChange(self, event) -> None:
+    ...
+
+def OnPitchBend(self, event) -> None:
+    ...
+
+def OnKeyPressure(self, event) -> None:
+    ...
+
+def OnChannelPressure(self, event) -> None:
+    ...
+
+def OnMidiOutMsg(self, event) -> None:
+    ...
+
+def OnIdle(self) -> None:
+    ...
+
+def OnRefresh(self, flags: int) -> None:
+    ...
+
+def OnDoFullRefresh(self) -> None:
+    ...
+
+def OnUpdateBeatIndicator(self, value: int) -> None:
+    ...
+
+def OnDisplayZone(self):
+    ...
+
+def OnUpdateLiveMode(self, last_tracK: int):
+    ...
+
+def OnDirtyMixerTrack(self, index: int):
+    ...
+
+def OnDirtyChannel(self, index: int, flag: int):
+    ...
+
+def OnFirstConnect(self):
+    ...
+
+def OnUpdateMeters(self):
+    ...
+
+def OnWaitingForInput(self):
+    ...
+
+def OnSendTempMsg(self, message: str, duration: int):
+    ...
