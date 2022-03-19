@@ -15,6 +15,6 @@ class ExampleTest(TestCase):
     def activate(self) -> None:
         self.markSuccess()
 
-@flSimpleTest(min_version=20)
+@flSimpleTest()
 def exampleTest():
     assert 1 == 1
