@@ -31,7 +31,10 @@ class TestCase:
         self.min_version = min_version
 
     def __repr__(self) -> str:
-        return f"{self.name} {self.details}"
+        if len(self.details):
+            return f"{self.name} {self.details}"
+        else:
+            return self.name
 
     def markSuccess(self) -> NoReturn:
         """Mark a multi-stage test case as completed
@@ -240,7 +243,8 @@ class SimpleTest(TestCase):
         details: str = "",
         min_version: int = -1
     ) -> None:
-        super().__init__(str(test_case), details, min_version)
+        test_name = f"{test_case.__module__}.{test_case.__name__}"
+        super().__init__(test_name, details, min_version)
         self._test = test_case
 
     def activate(self) -> None:

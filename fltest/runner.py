@@ -48,8 +48,8 @@ class TestOutput:
         if self.error is None:
             err = ""
         else:
-            err = f"{type(self.error)}"
-        print(f"{pass_str}: {self.case} {err}")
+            err = type(self.error).__name__
+        print(f"{pass_str} : {self.case} : {err}")
         if full and self.result == FAILED:
             if self.error is not None:
                 try:
