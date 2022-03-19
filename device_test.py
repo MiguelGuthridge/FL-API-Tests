@@ -1,70 +1,74 @@
 #name=API Unit Tests
 
-def OnInit(self) -> None:
-    ...
+from fltest import TestRunner
 
-def OnMidiIn(self, event) -> None:
-    ...
+runner = TestRunner()
 
-def OnMidiMsg(self, event) -> None:
-    ...
+def OnInit() -> None:
+    runner.onInit()
 
-def OnSysEx(self, event) -> None:
-    ...
+def OnMidiIn(event) -> None:
+    runner.onMidiIn(event)
 
-def OnNoteOn(self, event) -> None:
-    ...
+def OnMidiMsg(event) -> None:
+    runner.onMidiMsg(event)
 
-def OnNoteOff(self, event) -> None:
-    ...
+def OnSysEx(event) -> None:
+    runner.onSysEx(event)
 
-def OnControlChange(self, event) -> None:
-    ...
+def OnNoteOn(event) -> None:
+    runner.onNoteOn(event)
 
-def OnPitchBend(self, event) -> None:
-    ...
+def OnNoteOff(event) -> None:
+    runner.onNoteOff(event)
 
-def OnKeyPressure(self, event) -> None:
-    ...
+def OnControlChange(event) -> None:
+    runner.onControlChange(event)
 
-def OnChannelPressure(self, event) -> None:
-    ...
+def OnPitchBend(event) -> None:
+    runner.onPitchBend(event)
 
-def OnMidiOutMsg(self, event) -> None:
-    ...
+def OnKeyPressure(event) -> None:
+    runner.onKeyPressure(event)
+
+def OnChannelPressure(event) -> None:
+    runner.onChannelPressure(event)
+
+def OnMidiOutMsg(event) -> None:
+    runner.onMidiOutMsg(event)
 
 def OnIdle(self) -> None:
-    ...
+    runner.onIdle()
 
-def OnRefresh(self, flags: int) -> None:
-    ...
+def OnRefresh(flags: int) -> None:
+    runner.onRefresh(flags)
 
 def OnDoFullRefresh(self) -> None:
-    ...
+    runner.onDoFullRefresh()
 
-def OnUpdateBeatIndicator(self, value: int) -> None:
-    ...
+def OnUpdateBeatIndicator(value: int) -> None:
+    runner.onUpdateBeatIndicator(value)
 
 def OnDisplayZone(self):
-    ...
+    runner.onDisplayZone()
 
-def OnUpdateLiveMode(self, last_tracK: int):
-    ...
+def OnUpdateLiveMode(last_tracK: int):
+    runner.onUpdateLiveMode(last_tracK)
 
-def OnDirtyMixerTrack(self, index: int):
-    ...
+def OnDirtyMixerTrack(index: int):
+    runner.onDirtyMixerTrack(index)
 
-def OnDirtyChannel(self, index: int, flag: int):
-    ...
+def OnDirtyChannel(index: int, flag: int):
+    runner.onDirtyChannel(index, flag)
 
 def OnFirstConnect(self):
-    ...
+    runner.onFirstConnect()
 
 def OnUpdateMeters(self):
-    ...
+    runner.onUpdateMeters()
 
 def OnWaitingForInput(self):
-    ...
+    runner.onWaitingForInput()
 
-def OnSendTempMsg(self, message: str, duration: int):
-    ...
+def OnSendTempMsg(message: str, duration: int):
+    runner.onSendTempMsg(message, duration)

@@ -1,6 +1,6 @@
 
 from typing import Callable, Optional, NoReturn
-import config
+import config as config
 
 TestFunction = Callable[[], None]
 
