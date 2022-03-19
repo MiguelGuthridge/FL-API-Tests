@@ -1,5 +1,8 @@
 #name=API Unit Tests
 
+# Enable static typing features
+import fl_typing
+
 from fltest import TestRunner
 
 runner = TestRunner()
