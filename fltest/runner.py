@@ -48,17 +48,23 @@ class TestOutput:
         if self.error is None:
             err = ""
         else:
-            err = f"({self.error})"
+            err = f"{type(self.error)}"
         print(f"{pass_str}: {self.case} {err}")
         if full and self.result == FAILED:
             if self.error is not None:
                 try:
                     raise self.error
                 except Exception as e:
-                    tb = sys.exc_info()
-                    print(tb)
+                    tb = sys.exc_info()[2]
+                    # TODO: Figure out how to get traceback
+                    # if tb is not None:
+                    #     for s in dir(tb.tb_frame):
+                    #         print(getattr(tb.tb_frame, s))
+                        # print(tb.tb_frame.f_code)
             else:
                 print("No exception info")
+        if full and self.result == SKIPPED:
+            print(f"(Requires API version {self.case.min_version})")
 
 class TestRunner:
     """Manages tests and runs all tests
