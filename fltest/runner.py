@@ -43,14 +43,20 @@ class TestOutput:
         elif self.result == SKIPPED:
             pass_str = "Skipped"
         else:
-            pass_str = f"Failed with error {self.error}"
-        print(f"{self.case}: {pass_str}")
+            pass_str = "Failed"
+
+        if self.error is None:
+            err = ""
+        else:
+            err = f"({self.error})"
+        print(f"{pass_str}: {self.case} {err}")
         if full and self.result == FAILED:
             if self.error is not None:
                 try:
                     raise self.error
                 except Exception as e:
-                    print(sys.exc_info()[2])
+                    tb = sys.exc_info()
+                    print(tb)
             else:
                 print("No exception info")
 
@@ -74,10 +80,8 @@ class TestRunner:
         try:
             self._current_test = next(self._iterator)
             # If the minimum version is too low
-            if (
-                self._current_test.min_version != -1
-            and self._current_test.min_version < general.getVersion()
-            ):
+            print(self._current_test.min_version)
+            if (self._current_test.min_version > general.getVersion()):
                 output = TestOutput(self._current_test, SKIPPED, None)
                 self.printOutput(output)
                 self._skipped_details.append(output)
