@@ -80,7 +80,6 @@ class TestRunner:
         try:
             self._current_test = next(self._iterator)
             # If the minimum version is too low
-            print(self._current_test.min_version)
             if (self._current_test.min_version > general.getVersion()):
                 output = TestOutput(self._current_test, SKIPPED, None)
                 self.printOutput(output)
