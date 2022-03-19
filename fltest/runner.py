@@ -1,9 +1,11 @@
 
 import sys
+import general
 from typing import Optional, TypeVar, Callable
 from typing_extensions import Self, ParamSpec, Concatenate
 
-import config as config
+import config
+from .consts import TestResult, PASSED, FAILED, SKIPPED
 from fltest.testcase import TestCase, TestSuccess
 from fltest.manager import MANAGER
 
@@ -30,20 +32,25 @@ def callWrapper(
 class TestOutput:
     """Simple wrapper for test output
     """
-    def __init__(self, case: TestCase, passed: bool, error: Optional[Exception]) -> None:
+    def __init__(self, case: TestCase, result: TestResult, error: Optional[Exception]) -> None:
         self.case = case
-        self.passed = passed
+        self.result = result
         self.error = error
 
     def printout(self, full: bool = False) -> None:
-        pass_str = "Passed" if self.passed else f"Failed with error {str(self.error)}"
+        if self.result == PASSED:
+            pass_str = "Passed"
+        elif self.result == SKIPPED:
+            pass_str = "Skipped"
+        else:
+            pass_str = f"Failed with error {self.error}"
         print(f"{self.case}: {pass_str}")
-        if full and not self.passed:
+        if full and self.result == FAILED:
             if self.error is not None:
                 try:
                     raise self.error
                 except Exception as e:
-                    print(sys.exc_info())
+                    print(sys.exc_info()[2])
             else:
                 print("No exception info")
 
@@ -57,6 +64,7 @@ class TestRunner:
         self._iterator = iter(MANAGER)
         self._num_passed = 0
         self._failed_details: list[TestOutput] = []
+        self._skipped_details: list[TestOutput] = []
         self._done = False
         self.nextTest()
 
@@ -65,6 +73,16 @@ class TestRunner:
         """
         try:
             self._current_test = next(self._iterator)
+            # If the minimum version is too low
+            if (
+                self._current_test.min_version != -1
+            and self._current_test.min_version < general.getVersion()
+            ):
+                output = TestOutput(self._current_test, SKIPPED, None)
+                self.printOutput(output)
+                self._skipped_details.append(output)
+                self.nextTest()
+                return
             self.activate()
         except StopIteration:
             self._done = True
@@ -79,10 +97,7 @@ class TestRunner:
         if config.PRINT_EACH_TEST:
             test.printout()
         else:
-            if test.passed:
-                print('.', end='', flush=True)
-            else:
-                print('!', end='', flush=True)
+            print(test.result, end='', flush=True)
 
     def printResults(self):
         """Prints overall results of all tests
@@ -94,15 +109,20 @@ class TestRunner:
         print(f"From {len(MANAGER)} tests")
         print(f"{self._num_passed} passed")
         print(f"{len(self._failed_details)} failed")
+        print(f"{len(self._skipped_details)} skipped")
         print("-"*50)
         for t in self._failed_details:
             t.printout(full=True)
+            print("-"*50)
+        for t in self._skipped_details:
+            t.printout()
             print("-"*50)
 
     def endTest(self, passed: bool, error: Optional[Exception] = None):
         """Move to the next test case
         """
-        output = TestOutput(self._current_test, passed, error)
+        result = PASSED if passed else FAILED
+        output = TestOutput(self._current_test, result, error)
         if passed:
             self._num_passed += 1
         else:

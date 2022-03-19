@@ -19,14 +19,19 @@ class TestCase:
     def __init__(
         self,
         name: Optional[str] = None,
-        details: str = ""
+        details: str = "",
+        min_version: int = -1
     ) -> None:
         if name is None:
-            self.name = str(self)
+            self.name = str(type(self))
         else:
             self.name = name
 
         self.details = details
+        self.min_version = min_version
+
+    def __repr__(self) -> str:
+        return f"{self.name} {self.details}"
 
     def markSuccess(self) -> NoReturn:
         """Mark a multi-stage test case as completed
@@ -229,8 +234,13 @@ class SimpleTest(TestCase):
     The function should be provided to the constructor
     """
 
-    def __init__(self, test_case: TestFunction, details: str = "") -> None:
-        super().__init__(str(test_case), details)
+    def __init__(
+        self,
+        test_case: TestFunction,
+        details: str = "",
+        min_version: int = -1
+    ) -> None:
+        super().__init__(str(test_case), details, min_version)
         self._test = test_case
 
     def activate(self) -> None:

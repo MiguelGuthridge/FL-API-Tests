@@ -3,8 +3,11 @@
 # Enable static typing features
 import fl_typing
 
-from fltest import TestRunner
+# Load tests
+import tests
 
+# And finally create our test runner
+from fltest import TestRunner
 runner = TestRunner()
 
 def OnInit() -> None:

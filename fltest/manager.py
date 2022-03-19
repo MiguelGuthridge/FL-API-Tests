@@ -3,8 +3,8 @@
 Keeps track of all test cases
 """
 
-from typing import Optional
-from fltest.testcase import TestCase, TestSuccess
+from typing import Callable, Optional
+from fltest.testcase import TestCase, SimpleTest
 
 class TestManager:
     """Manages test cases
@@ -24,7 +24,7 @@ class TestManager:
 
 MANAGER = TestManager()
 
-def registerTest(test: type[TestCase]) -> type[TestCase]:
+def flTest():
     """Register a test case
 
     This function can be used as a decorator for test cases
@@ -35,15 +35,27 @@ def registerTest(test: type[TestCase]) -> type[TestCase]:
     Returns:
         type[TestCase]: that same test
     """
-    MANAGER.register(test())
-    return test
+    def decorator(test: type[TestCase]) -> type[TestCase]:
+        MANAGER.register(test())
+        return test
+    return decorator
 
-# Example test case
-@registerTest
-class ExampleTest(TestCase):
-    def __init__(self, name: Optional[str] = None, details: str = "") -> None:
-        super().__init__(name, details="A simple test to ensure the testing "
-                         "framework is working correctly")
-    def activate(self) -> None:
-        assert 1 == 1
-        raise TestSuccess
+def flSimpleTest(
+    details: str = "",
+    min_version: int = -1
+):
+    """Register a simple test function
+
+    This should be used to decorate a function that takes no arguments and
+    returns None
+
+    Args:
+        test (Callable[[None], None]): test function
+
+    Returns:
+        Callable[[None], None]: test function
+    """
+    def decorator(test: Callable[[], None]):
+        MANAGER.register(SimpleTest(test, details, min_version))
+        return test
+    return decorator
