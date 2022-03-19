@@ -9,6 +9,8 @@ from fltest import flSimpleTest
 import time
 import transport
 
+from tests.helpers import floatApproxEq
+
 @flSimpleTest()
 def playback():
     """Pressing play"""
@@ -66,5 +68,5 @@ def songPosition():
     """Song position"""
     transport.stop()
     transport.setSongPos(0.5)
-    assert transport.getSongPos() == 0.5
+    assert floatApproxEq(0.5, transport.getSongPos())
     transport.stop()
