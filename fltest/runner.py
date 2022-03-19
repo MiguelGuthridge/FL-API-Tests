@@ -64,7 +64,7 @@ class TestRunner:
     """Manages tests and runs all tests
     """
 
-    _current_test: TestCase
+    _current_test: Optional[TestCase]
 
     def __init__(self) -> None:
         self._iterator = iter(MANAGER)
@@ -72,7 +72,18 @@ class TestRunner:
         self._failed_details: list[TestOutput] = []
         self._skipped_details: list[TestOutput] = []
         self._done = False
-        self.nextTest()
+        self._current_test = None
+
+    def curr(self) -> TestCase:
+        """Returns the current test, or creates it if it doesn't exist
+
+        Returns:
+            TestCase: current test
+        """
+        if self._current_test is None:
+            self.nextTest()
+            assert self._current_test is not None
+        return self._current_test
 
     def nextTest(self):
         """Move to the next test case
@@ -125,7 +136,7 @@ class TestRunner:
         """Move to the next test case
         """
         result = PASSED if passed else FAILED
-        output = TestOutput(self._current_test, result, error)
+        output = TestOutput(self.curr(), result, error)
         if passed:
             self._num_passed += 1
         else:
@@ -141,7 +152,7 @@ class TestRunner:
     def activate(self) -> None:
         """Activate a new test
         """
-        self._current_test.activate()
+        self.curr().activate()
 
     @callWrapper
     def onInit(self) -> None:
@@ -151,7 +162,7 @@ class TestRunner:
         be called once for each test when the script starts up. Care should be
         taken such that tests here don't interfere with other test cases.
         """
-        self._current_test.onInit()
+        # TODO
 
     @callWrapper
     def onMidiIn(self, event) -> None:
@@ -163,7 +174,7 @@ class TestRunner:
         Args:
             event (EventData): event to test
         """
-        self._current_test.onMidiIn(event)
+        self.curr().onMidiIn(event)
 
     @callWrapper
     def onMidiMsg(self, event) -> None:
@@ -175,7 +186,7 @@ class TestRunner:
         Args:
             event (EventData): event to test
         """
-        ...
+        self.curr().onMidiMsg(event)
 
     @callWrapper
     def onSysEx(self, event) -> None:
@@ -187,7 +198,7 @@ class TestRunner:
         Args:
             event (EventData): event to test
         """
-        ...
+        self.curr().onSysEx(event)
 
     @callWrapper
     def onNoteOn(self, event) -> None:
@@ -199,7 +210,7 @@ class TestRunner:
         Args:
             event (EventData): event to test
         """
-        ...
+        self.curr().onNoteOn(event)
 
     @callWrapper
     def onNoteOff(self, event) -> None:
@@ -211,7 +222,7 @@ class TestRunner:
         Args:
             event (EventData): event to test
         """
-        ...
+        self.curr().onNoteOff(event)
 
     @callWrapper
     def onControlChange(self, event) -> None:
@@ -223,7 +234,7 @@ class TestRunner:
         Args:
             event (EventData): event to test
         """
-        ...
+        self.curr().onControlChange(event)
 
     @callWrapper
     def onPitchBend(self, event) -> None:
@@ -235,7 +246,7 @@ class TestRunner:
         Args:
             event (EventData): event to test
         """
-        ...
+        self.curr().onPitchBend(event)
 
     @callWrapper
     def onKeyPressure(self, event) -> None:
@@ -247,7 +258,7 @@ class TestRunner:
         Args:
             event (EventData): event to test
         """
-        ...
+        self.curr().onKeyPressure(event)
 
     @callWrapper
     def onChannelPressure(self, event) -> None:
@@ -259,7 +270,7 @@ class TestRunner:
         Args:
             event (EventData): event to test
         """
-        ...
+        self.curr().onChannelPressure(event)
 
     @callWrapper
     def onMidiOutMsg(self, event) -> None:
@@ -271,7 +282,7 @@ class TestRunner:
         Args:
             event (EventData): event to test
         """
-        ...
+        self.curr().onMidiOutMsg(event)
 
     @callWrapper
     def onIdle(self) -> None:
@@ -282,7 +293,7 @@ class TestRunner:
         Args:
             event (EventData): event to test
         """
-        ...
+        self.curr().onIdle()
 
     @callWrapper
     def onRefresh(self, flags: int) -> None:
