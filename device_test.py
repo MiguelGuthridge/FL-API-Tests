@@ -40,19 +40,19 @@ def OnChannelPressure(event) -> None:
 def OnMidiOutMsg(event) -> None:
     runner.onMidiOutMsg(event)
 
-def OnIdle(self) -> None:
+def OnIdle() -> None:
     runner.onIdle()
 
 def OnRefresh(flags: int) -> None:
     runner.onRefresh(flags)
 
-def OnDoFullRefresh(self) -> None:
+def OnDoFullRefresh() -> None:
     runner.onDoFullRefresh()
 
 def OnUpdateBeatIndicator(value: int) -> None:
     runner.onUpdateBeatIndicator(value)
 
-def OnDisplayZone(self):
+def OnDisplayZone():
     runner.onDisplayZone()
 
 def OnUpdateLiveMode(last_tracK: int):
@@ -64,13 +64,13 @@ def OnDirtyMixerTrack(index: int):
 def OnDirtyChannel(index: int, flag: int):
     runner.onDirtyChannel(index, flag)
 
-def OnFirstConnect(self):
+def OnFirstConnect():
     runner.onFirstConnect()
 
-def OnUpdateMeters(self):
+def OnUpdateMeters():
     runner.onUpdateMeters()
 
-def OnWaitingForInput(self):
+def OnWaitingForInput():
     runner.onWaitingForInput()
 
 def OnSendTempMsg(message: str, duration: int):

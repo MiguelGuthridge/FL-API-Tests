@@ -1,12 +1,31 @@
 
-from typing import Optional, ParamSpec, TypeVar, Callable, Concatenate
-from typing_extensions import Self
+import sys
+from typing import Optional, TypeVar, Callable
+from typing_extensions import Self, ParamSpec, Concatenate
 
 import config as config
 from fltest.testcase import TestCase, TestSuccess
 from fltest.manager import MANAGER
 
 P = ParamSpec("P")
+
+def callWrapper(
+    func: Callable[Concatenate[Self, P], None] # type: ignore
+) -> Callable[Concatenate[Self, P], None]: # type: ignore
+    """Decorator for call functions used to forward test instances
+
+    Catches test successes and failures
+    """
+    def decorated(self: 'TestRunner', *args: P.args, **kwargs: P.kwargs) -> None:
+        try:
+            if not self._done:
+                func(self, *args, **kwargs)
+        except TestSuccess:
+            self.endTest(True)
+        except Exception as e:
+            self.endTest(False, e)
+
+    return decorated
 
 class TestOutput:
     """Simple wrapper for test output
@@ -16,31 +35,40 @@ class TestOutput:
         self.passed = passed
         self.error = error
 
+    def printout(self, full: bool = False) -> None:
+        pass_str = "Passed" if self.passed else f"Failed with error {str(self.error)}"
+        print(f"{self.case}: {pass_str}")
+        if full and not self.passed:
+            if self.error is not None:
+                try:
+                    raise self.error
+                except Exception as e:
+                    print(sys.exc_info())
+            else:
+                print("No exception info")
+
 class TestRunner:
+    """Manages tests and runs all tests
+    """
+
     _current_test: TestCase
+
     def __init__(self) -> None:
         self._iterator = iter(MANAGER)
-        self._current_test = next(self._iterator)
         self._num_passed = 0
         self._failed_details: list[TestOutput] = []
+        self._done = False
+        self.nextTest()
 
-    @staticmethod
-    def callWrapper(
-        func: Callable[Concatenate[Self, P], None] # type: ignore
-    ) -> Callable[Concatenate[Self, P], None]: # type: ignore
-        """Decorator for call functions used to forward test instances
-
-        Catches test successes and failures
+    def nextTest(self):
+        """Move to the next test case
         """
-        def decorated(self: 'TestRunner', *args: P.args, **kwargs: P.kwargs) -> None:
-            try:
-                func(self, *args, **kwargs)
-            except TestSuccess:
-                self.endTest(True)
-            except Exception as e:
-                self.endTest(False, e)
-
-        return decorated
+        try:
+            self._current_test = next(self._iterator)
+            self.activate()
+        except StopIteration:
+            self._done = True
+            self.printResults()
 
     def printOutput(self, test: TestOutput):
         """Print output of a test case
@@ -48,14 +76,28 @@ class TestRunner:
         Args:
             test (TestOutput): test to print
         """
-        pass_str = "Passed" if test.passed else f"Failed with error {str(test.error)}"
         if config.PRINT_EACH_TEST:
-            print(f"{test.case.name}: {pass_str}")
+            test.printout()
         else:
             if test.passed:
                 print('.', end='', flush=True)
             else:
                 print('!', end='', flush=True)
+
+    def printResults(self):
+        """Prints overall results of all tests
+        """
+        print()
+        print("-"*50)
+        print(f"Test Results")
+        print("-"*50)
+        print(f"From {len(MANAGER)} tests")
+        print(f"{self._num_passed} passed")
+        print(f"{len(self._failed_details)} failed")
+        print("-"*50)
+        for t in self._failed_details:
+            t.printout(full=True)
+            print("-"*50)
 
     def endTest(self, passed: bool, error: Optional[Exception] = None):
         """Move to the next test case
@@ -67,8 +109,7 @@ class TestRunner:
             self._failed_details.append(output)
 
         self.printOutput(output)
-
-        self._current_test = next(self._iterator)
+        self.nextTest()
 
     #                             - Callbacks -
     ############################################################################
@@ -77,7 +118,7 @@ class TestRunner:
     def activate(self) -> None:
         """Activate a new test
         """
-        ...
+        self._current_test.activate()
 
     @callWrapper
     def onInit(self) -> None:
@@ -87,7 +128,7 @@ class TestRunner:
         be called once for each test when the script starts up. Care should be
         taken such that tests here don't interfere with other test cases.
         """
-        ...
+        self._current_test.onInit()
 
     @callWrapper
     def onMidiIn(self, event) -> None:
@@ -99,7 +140,7 @@ class TestRunner:
         Args:
             event (EventData): event to test
         """
-        ...
+        self._current_test.onMidiIn(event)
 
     @callWrapper
     def onMidiMsg(self, event) -> None:
