@@ -29,7 +29,7 @@ class TestCase:
 
         if details is None:
             if self.__doc__ is not None:
-                self.details = self.__doc__
+                self.details = self.__doc__.strip()
             else:
                 self.details = ""
         else:
