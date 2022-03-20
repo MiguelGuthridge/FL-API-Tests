@@ -308,11 +308,13 @@ class TestRunner:
         Args:
             flags (int): refresh flags
         """
+        self.curr().onRefresh(flags)
 
     @callWrapper
     def onDoFullRefresh(self) -> None:
         """Called during FL Studio's OnDoFullRefresh() method
         """
+        self.curr().onDoFullRefresh()
 
     @callWrapper
     def onUpdateBeatIndicator(self, value: int) -> None:
@@ -321,46 +323,55 @@ class TestRunner:
         Args:
             value (int): beat type: 0 = Off; 1 = Bar; 2 = Beat
         """
+        self.curr().onUpdateBeatIndicator(value)
 
     @callWrapper
     def onDisplayZone(self):
         """Called during FL Studio's OnDisplayZone() method
         """
+        self.curr().onDisplayZone()
 
     @callWrapper
     def onUpdateLiveMode(self, last_tracK: int):
         """Called during FL Studio's OnUpdateLiveMode() method
         """
+        self.curr().onUpdateLiveMode(last_tracK)
 
     @callWrapper
     def onDirtyMixerTrack(self, index: int):
         """Called during FL Studio's OnDirtyMixerTrack() method
         """
+        self.curr().onDirtyMixerTrack(index)
 
     @callWrapper
     def onDirtyChannel(self, index: int, flag: int):
         """Called during FL Studio's OnDirtyChannel() method
         """
+        self.curr().onDirtyChannel(index, flag)
 
     @callWrapper
     def onFirstConnect(self):
         """Called during FL Studio's OnFirstConnect() method
         """
+        self.curr().onFirstConnect()
 
     @callWrapper
     def onUpdateMeters(self):
         """Called during FL Studio's OnUpdateMeters() method
         """
+        self.curr().onUpdateMeters()
 
     @callWrapper
     def onWaitingForInput(self):
         """Called during FL Studio's OnWaitingForInput() method
         """
+        self.curr().onWaitingForInput()
 
     @callWrapper
     def onSendTempMsg(self, message: str, duration: int):
         """Called during FL Studio's OnSendTempMsg() method
         """
+        self.curr().onSendTempMsg(message, duration)
 
 class DummyTest(TestCase):
     """A dummy test that is substituted once testing is complete so that we
