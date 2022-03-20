@@ -4,6 +4,8 @@ import general
 from typing import Optional, TypeVar, Callable
 from typing_extensions import Self, ParamSpec, Concatenate
 
+import transport
+
 import config
 from .consts import TestResult, PASSED, FAILED, SKIPPED
 from fltest.testcase import TestCase, TestSuccess
@@ -79,6 +81,15 @@ class TestRunner:
         self._skipped_details: list[TestOutput] = []
         self._done = False
         self._current_test = None
+
+    def __repr__(self) -> str:
+        return "\n".join([
+            f"TestRunner:",
+            f"{self._num_passed} passed",
+            f"{len(self._failed_details)} failed",
+            f"{len(self._skipped_details)} failed",
+            f"current = {self._current_test}",
+        ])
 
     def curr(self) -> TestCase:
         """Returns the current test, or creates it if it doesn't exist
@@ -159,7 +170,17 @@ class TestRunner:
             self._failed_details.append(output)
 
         self.printOutput(output)
+        self.resetFlState()
         self.nextTest()
+
+    def resetFlState(self):
+        """Resets common parts of FL Studio's state
+        * Playback
+        *
+        """
+        transport.stop()
+        if transport.isRecording():
+            transport.record()
 
     #                             - Callbacks -
     ############################################################################
