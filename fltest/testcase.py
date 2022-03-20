@@ -244,6 +244,8 @@ class SimpleTest(TestCase):
     ) -> None:
         test_name = f"{test_case.__module__}.{test_case.__name__}"
         details = test_case.__doc__
+        if details is None:
+            details = ""
 
         super().__init__(test_name, details, min_version, unsafe)
         self._test = test_case

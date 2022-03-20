@@ -62,7 +62,7 @@ class TestOutput:
                 pass
             else:
                 print("No exception info")
-        if full and self.result == SKIPPED:
+        elif full and self.result == SKIPPED:
             print(self.details)
 
 class TestRunner:
@@ -145,7 +145,7 @@ class TestRunner:
                 t.printout(full=True)
                 print("-"*50)
             for t in self._skipped_details:
-                t.printout()
+                t.printout(full=True)
                 print("-"*50)
 
     def endTest(self, passed: bool, error: Optional[Exception] = None):
