@@ -52,15 +52,6 @@ class TestCase:
         """
         ...
 
-    def onInit(self) -> None:
-        """Called during FL Studio's OnInit() method
-
-        Used to test cases during OnInit(). Unlike other test cases, this will
-        be called once for each test when the script starts up. Care should be
-        taken such that tests here don't interfere with other test cases.
-        """
-        ...
-
     def onMidiIn(self, event) -> None:
         """Called during FL Studio's OnMidiIn() method
 

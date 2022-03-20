@@ -48,8 +48,8 @@ class TestOutput:
         if self.error is None:
             err = ""
         else:
-            err = f"{type(self.error).__name__}{self.error.args}"
-        print(f"{pass_str} : {self.case} : {err}")
+            err = f": {type(self.error).__name__}{self.error.args}"
+        print(f"{self.result} {pass_str} : {self.case} {err}")
         if full and self.result == FAILED:
             if self.error is not None:
                 pass
@@ -64,8 +64,9 @@ class TestRunner:
 
     _current_test: Optional[TestCase]
 
-    def __init__(self) -> None:
+    def __init__(self, do_unsafe: bool) -> None:
         self._iterator = iter(MANAGER)
+        self._do_unsafe = do_unsafe
         self._num_passed = 0
         self._failed_details: list[TestOutput] = []
         self._skipped_details: list[TestOutput] = []
@@ -123,12 +124,13 @@ class TestRunner:
         print(f"{len(self._failed_details)} failed")
         print(f"{len(self._skipped_details)} skipped")
         print("-"*50)
-        for t in self._failed_details:
-            t.printout(full=True)
-            print("-"*50)
-        for t in self._skipped_details:
-            t.printout()
-            print("-"*50)
+        if not config.PRINT_EACH_TEST:
+            for t in self._failed_details:
+                t.printout(full=True)
+                print("-"*50)
+            for t in self._skipped_details:
+                t.printout()
+                print("-"*50)
 
     def endTest(self, passed: bool, error: Optional[Exception] = None):
         """Move to the next test case
@@ -151,16 +153,6 @@ class TestRunner:
         """Activate a new test
         """
         self.curr().activate()
-
-    @callWrapper
-    def onInit(self) -> None:
-        """Called during FL Studio's OnInit() method
-
-        Used to test cases during OnInit(). Unlike other test cases, this will
-        be called once for each test when the script starts up. Care should be
-        taken such that tests here don't interfere with other test cases.
-        """
-        # TODO
 
     @callWrapper
     def onMidiIn(self, event) -> None:
