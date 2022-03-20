@@ -16,7 +16,7 @@ print("Discovering tests...")
 import tests
 print(f"Found {len(MANAGER)} tests")
 print('-'*50)
-print("To run tests, open 'Test Project.flp', then call the `run()` function")
+print("To run tests, open 'API Test Project.flp', then call the `run()` function")
 print("To run unsafe tests too, call `run(unsafe=True)`")
 
 runner: Optional[TestRunner] = None

@@ -11,7 +11,7 @@ import playlist
 @flSimpleTest()
 def minIndex():
     """Access index 1"""
-    assert playlist.getTrackName(1) == "Example Track"
+    playlist.getTrackName(1)
 
 @flSimpleTest()
 def maxIndex():

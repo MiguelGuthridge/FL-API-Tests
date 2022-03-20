@@ -41,8 +41,8 @@ def flTest():
     return decorator
 
 def flSimpleTest(
-    details: Optional[str] = None,
-    min_version: int = -1
+    min_version: int = -1,
+    unsafe: bool = False
 ):
     """Register a simple test function
 
@@ -56,6 +56,6 @@ def flSimpleTest(
         Callable[[None], None]: test function
     """
     def decorator(test: Callable[[], None]):
-        MANAGER.register(SimpleTest(test, details, min_version))
+        MANAGER.register(SimpleTest(test, min_version, unsafe))
         return test
     return decorator

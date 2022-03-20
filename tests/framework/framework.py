@@ -3,6 +3,9 @@ tests > framework > framework
 
 Tests for the testing framework
 """
+
+import playlist
+
 from fltest import TestCase, flTest, flSimpleTest
 
 # Example test case
@@ -18,3 +21,8 @@ def functionTest():
     """A simple test function to ensure the framework is working correctly
     """
     assert 1 == 1
+
+@flSimpleTest()
+def checkFile():
+    """Ensure the 'API Test Project.flp' project is loaded"""
+    assert playlist.getTrackName(1) == "Example Track"

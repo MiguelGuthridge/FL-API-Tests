@@ -20,7 +20,8 @@ class TestCase:
         self,
         name: Optional[str] = None,
         details: Optional[str] = None,
-        min_version: int = -1
+        min_version: int = -1,
+        unsafe: bool = False
     ) -> None:
         if name is None:
             self.name = f"{self.__module__}.{self.__class__.__name__}"
@@ -35,6 +36,7 @@ class TestCase:
         else:
             self.details = details.strip()
         self.min_version = min_version
+        self.unsafe = unsafe
 
     def __repr__(self) -> str:
         if len(self.details):
@@ -237,14 +239,13 @@ class SimpleTest(TestCase):
     def __init__(
         self,
         test_case: TestFunction,
-        details: Optional[str] = None,
-        min_version: int = -1
+        min_version: int = -1,
+        unsafe: bool = False
     ) -> None:
         test_name = f"{test_case.__module__}.{test_case.__name__}"
-        if details is None:
-            details = test_case.__doc__
+        details = test_case.__doc__
 
-        super().__init__(test_name, details, min_version)
+        super().__init__(test_name, details, min_version, unsafe)
         self._test = test_case
 
     def activate(self) -> None:
