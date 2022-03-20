@@ -19,20 +19,26 @@ class TestCase:
     def __init__(
         self,
         name: Optional[str] = None,
-        details: str = "",
+        details: Optional[str] = None,
         min_version: int = -1
     ) -> None:
         if name is None:
-            self.name = str(type(self))
+            self.name = f"{self.__module__}.{self.__class__.__name__}"
         else:
             self.name = name
 
-        self.details = details
+        if details is None:
+            if self.__doc__ is not None:
+                self.details = self.__doc__
+            else:
+                self.details = ""
+        else:
+            self.details = details.strip()
         self.min_version = min_version
 
     def __repr__(self) -> str:
         if len(self.details):
-            return f"{self.name} {self.details}"
+            return f"{self.name} ({self.details})"
         else:
             return self.name
 
@@ -231,10 +237,13 @@ class SimpleTest(TestCase):
     def __init__(
         self,
         test_case: TestFunction,
-        details: str = "",
+        details: Optional[str] = None,
         min_version: int = -1
     ) -> None:
         test_name = f"{test_case.__module__}.{test_case.__name__}"
+        if details is None:
+            details = test_case.__doc__
+
         super().__init__(test_name, details, min_version)
         self._test = test_case
 

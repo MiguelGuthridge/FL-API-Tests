@@ -41,7 +41,7 @@ def flTest():
     return decorator
 
 def flSimpleTest(
-    details: str = "",
+    details: Optional[str] = None,
     min_version: int = -1
 ):
     """Register a simple test function
