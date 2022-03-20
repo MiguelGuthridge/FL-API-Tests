@@ -5,5 +5,6 @@ Tests for FL Studio's transport module
 """
 
 from . import (
-    basic_transport
+    basic_transport,
+    position
 )
