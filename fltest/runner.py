@@ -32,10 +32,17 @@ def callWrapper(
 class TestOutput:
     """Simple wrapper for test output
     """
-    def __init__(self, case: TestCase, result: TestResult, error: Optional[Exception]) -> None:
+    def __init__(
+        self,
+        case: TestCase,
+        result: TestResult,
+        error: Optional[Exception] = None,
+        details: str = ""
+    ) -> None:
         self.case = case
         self.result = result
         self.error = error
+        self.details = details
 
     def printout(self, full: bool = False) -> None:
         if self.result == PASSED:
@@ -56,7 +63,7 @@ class TestOutput:
             else:
                 print("No exception info")
         if full and self.result == SKIPPED:
-            print(f"(Requires API version {self.case.min_version})")
+            print(self.details)
 
 class TestRunner:
     """Manages tests and runs all tests
@@ -90,15 +97,24 @@ class TestRunner:
         try:
             self._current_test = next(self._iterator)
             # If the minimum version is too low
-            if (self._current_test.min_version > general.getVersion()):
-                output = TestOutput(self._current_test, SKIPPED, None)
+            if (self.curr().min_version > general.getVersion()):
+                output = TestOutput(self.curr(), SKIPPED, details=f"(Requires API version {self.curr().min_version})")
                 self.printOutput(output)
                 self._skipped_details.append(output)
                 self.nextTest()
                 return
+            # If marked as unsafe
+            if not self._do_unsafe and self.curr().unsafe:
+                output = TestOutput(self.curr(), SKIPPED, details="(Marked as unsafe)")
+                self.printOutput(output)
+                self._skipped_details.append(output)
+                self.nextTest()
+                return
+
             self.activate()
         except StopIteration:
             self._done = True
+            self._current_test = DummyTest()
             self.printResults()
 
     def printOutput(self, test: TestOutput):
@@ -346,3 +362,7 @@ class TestRunner:
         """Called during FL Studio's OnSendTempMsg() method
         """
 
+class DummyTest(TestCase):
+    """A dummy test that is substituted once testing is complete so that we
+    don't accidentally upset any tests
+    """
