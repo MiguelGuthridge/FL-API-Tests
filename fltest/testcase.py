@@ -8,6 +8,10 @@ class TestSuccess(BaseException):
     """Raised when a test is successful
     """
 
+class TestFailure(Exception):
+    """Raised when a test has failed
+    """
+
 class TestCase:
     """Base class representing a single test case
 
@@ -48,6 +52,11 @@ class TestCase:
         """Mark a multi-stage test case as completed
         """
         raise TestSuccess()
+
+    def markFailure(self, reason: str) -> NoReturn:
+        """Mark a multi-stage test case as failed
+        """
+        raise TestFailure(reason)
 
     #                             - Callbacks -
     ############################################################################
